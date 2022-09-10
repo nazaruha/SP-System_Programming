@@ -1,0 +1,20 @@
+﻿<Window x:Class="WPFTaskHW.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFTaskHW"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label Content="How many photos would you like to download?" FontSize="20" HorizontalAlignment="Left" Height="40" Margin="10,28,0,0" VerticalAlignment="Top" Width="434" MouseDown="Label_MouseDown"/>
+        <TextBox Name="txtCounter" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Height="31" Margin="10,60,0,0" TextWrapping="Wrap" Text="Input number..." VerticalAlignment="Top" Width="568" FontSize="20" Foreground="#FF9A9898" GotFocus="txtCounter_GotFocus" LostFocus="txtCounter_LostFocus" TextChanged="txtCounter_TextChanged"/>
+        <ProgressBar Name="progressBar" Minimum="0" Maximum="100" HorizontalAlignment="Center" Height="24" Margin="0,355,0,0" VerticalAlignment="Top" Width="780"/>
+        <Label Name="lbCounter" FontWeight="Bold" Content="0/0" HorizontalAlignment="Center" Height="28" Margin="0,353,0,0" VerticalAlignment="Top" Width="172" FontSize="15" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Button Name="btnDownload" Content="Download" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,60,0,0" VerticalAlignment="Top" Width="124" Click="btnDownload_Click" IsEnabled="False"/>
+        <Button Name="btnCancel" Content="Cancel" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,104,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnCancel_Click"/>
+        <Button Name="btnPause" Content="Pause" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,148,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnPause_Click"/>
+        <Button Name="btnResume" Content="Resume" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,190,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnResume_Click"/>
+        <Label  Name="lbDownloading" Content="Downloading..." FontWeight="Bold" HorizontalAlignment="Center" Height="27" Margin="0,384,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+    </Grid>
+</Window>
