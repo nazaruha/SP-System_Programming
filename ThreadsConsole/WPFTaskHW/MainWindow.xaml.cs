@@ -26,12 +26,15 @@ namespace WPFTaskHW
     /// </summary>
     public partial class MainWindow : Window
     {
+        private object thisLock = new object();
         private CancellationTokenSource ctSource;
         private CancellationTokenSource ctSource2; // for label "lbDownload" view
         private CancellationToken token;  // треба для скасування любого потока який захочем
         private CancellationToken token2;
         private Task task;
         private Task task2; // for label "lbDownload" view
+        private static ManualResetEvent _mre = new ManualResetEvent(false); // Вміє лочить потік. Тіпа ставити на паузу
+        private static ManualResetEvent _mre2 = new ManualResetEvent(false); // Вміє лочить потік. Тіпа ставити на паузу
         private bool isPaused = false;
         private int count = 0;
         public MainWindow()
@@ -111,32 +114,35 @@ namespace WPFTaskHW
             token = ctSource.Token;
             token2 = ctSource2.Token;
             count = int.Parse(txtCounter.Text);
+
             task = new Task(() => DownloadImages(count), token);
             task.Start();
+            _mre.Set();
+
             task2 = new Task(() => DownloadingView(), token2);
             task2.Start();
+            _mre2.Set();
+            
         }
 
         private void DownloadingView()
         {
             while (true)
             {
+                _mre2.WaitOne(Timeout.Infinite);
                 if (token.IsCancellationRequested)
                 {
                     ctSource2.Cancel();
                     return;
                 }
-                if (!isPaused)
-                {
-                    Thread.Sleep(500);
-                    this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading   "; });
-                    Thread.Sleep(500);
-                    this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading.  "; });
-                    Thread.Sleep(500);
-                    this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading.. "; });
-                    Thread.Sleep(500);
-                    this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading..."; });
-                }
+                Thread.Sleep(500);
+                this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading   "; });
+                Thread.Sleep(500);
+                this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading.  "; });
+                Thread.Sleep(500);
+                this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading.. "; });
+                Thread.Sleep(500);
+                this.Dispatcher.Invoke(() => { lbDownloading.Content = "Downloading..."; });
             }
         }
 
@@ -146,15 +152,25 @@ namespace WPFTaskHW
             if (isPaused)
             {
                 this.Dispatcher.Invoke(() => { res = MessageBox.Show("Are you sure?", "Cancel", MessageBoxButton.YesNo, MessageBoxImage.Stop); });
-                if (res == MessageBoxResult.No) return;
-                this.Dispatcher.Invoke(() => { isPaused = false; });
+                if (res == MessageBoxResult.No)
+                {
+                    _mre2.Set();
+                    return;
+                }
+                btnDownload.IsEnabled = true;
+                _mre.Set();
+                isPaused = !isPaused;
                 ctSource.Cancel();
             }
             else
             {
-                this.Dispatcher.Invoke(() => { isPaused = true; });
+                _mre.Reset();
+                _mre2.Reset();
+                isPaused = !isPaused;
                 this.Dispatcher.Invoke(() => { res = MessageBox.Show("Are you sure?", "Cancel", MessageBoxButton.YesNo, MessageBoxImage.Stop); });
-                this.Dispatcher.Invoke(() => { isPaused = false; });
+                _mre.Set();
+                _mre2.Reset();
+                isPaused = !isPaused;
                 if (res == MessageBoxResult.No) return;
                 ctSource.Cancel();
             }
@@ -162,34 +178,37 @@ namespace WPFTaskHW
 
         private void DownloadImages(int count)
         {
-            Faker faker = new Faker();
-            int j = 0;
-            int progress = 0;
-            for (int i = 0; i < count; i++)
+            lock (thisLock)
             {
-                if (isPaused) while (isPaused) { }
-                Thread.Sleep(500);
-                if (token.IsCancellationRequested)
+                Faker faker = new Faker();
+                int j = 0;
+                int progress = 0;
+                for (int i = 0; i < count; i++)
                 {
-                    ResetForm(j);
-                    return;
+                    _mre.WaitOne(Timeout.Infinite); //Якщо був залочений потік то ми чекаємо поки його розлочать
+                    Thread.Sleep(500);
+                    if (token.IsCancellationRequested)
+                    {
+                        ResetForm(j);
+                        return;
+                    }
+                    using (WebClient client = new WebClient())
+                    {
+                        string fileName = Path.GetRandomFileName();
+                        string path = Directory.GetCurrentDirectory() + $"\\Images\\{fileName}.png";
+                        client.DownloadFile(new Uri(faker.Image.LoremFlickrUrl()), path);
+                    }
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        lbCounter.Content = $"{++j}/{txtCounter.Text}";
+                    });
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        progressBar.Value = ++progress;
+                    });
                 }
-                using (WebClient client = new WebClient())
-                {
-                    string fileName = Path.GetRandomFileName();
-                    string path = Directory.GetCurrentDirectory() + $"\\Images\\{fileName}.png";
-                    client.DownloadFile(new Uri(faker.Image.LoremFlickrUrl()), path);
-                }
-                this.Dispatcher.Invoke(() =>
-                {
-                    lbCounter.Content = $"{++j}/{txtCounter.Text}";
-                });
-                this.Dispatcher.Invoke(() =>
-                {
-                    progressBar.Value = ++progress;
-                });
+                ResetForm(j);
             }
-            ResetForm(j);
         }
 
         private void ResetForm(int count)
@@ -208,16 +227,33 @@ namespace WPFTaskHW
 
         private void btnPause_Click(object sender, RoutedEventArgs e)
         {
+            //if (isPaused) // Якщо потік був залочений
+            //{
+            //    _mre.Set(); // Пускаємо потік далі, змінюємо кнопку 
+            //    this.Dispatcher.Invoke(() => { btnResume.IsEnabled = false; });
+            //    this.Dispatcher.Invoke(() => { btnPause.IsEnabled = true; });
+            //}
+            //else
+            //{
+            //    _mre.Reset(); // Залочити потік
+            //    this.Dispatcher.Invoke(() => { btnResume.IsEnabled = true; });
+            //    this.Dispatcher.Invoke(() => { btnPause.IsEnabled = false; });
+            //}
+
+            _mre.Reset(); // Залочити потік
+            _mre2.Reset();
             this.Dispatcher.Invoke(() => { btnResume.IsEnabled = true; });
             this.Dispatcher.Invoke(() => { btnPause.IsEnabled = false; });
-            this.Dispatcher.Invoke(() => { isPaused = true; });
+            isPaused = !isPaused;
         }
 
         private void btnResume_Click(object sender, RoutedEventArgs e)
         {
+            _mre.Set(); // Пускаємо потік далі, змінюємо кнопку 
+            _mre2.Set();
             this.Dispatcher.Invoke(() => { btnResume.IsEnabled = false; });
             this.Dispatcher.Invoke(() => { btnPause.IsEnabled = true; });
-            this.Dispatcher.Invoke(() => { isPaused = false; });
+            isPaused = !isPaused;
         }
     }
 }
