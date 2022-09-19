@@ -5,16 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFTaskHW"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="450" Width="1013" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Label Content="How many photos would you like to download?" FontSize="20" HorizontalAlignment="Left" Height="40" Margin="10,28,0,0" VerticalAlignment="Top" Width="434" MouseDown="Label_MouseDown"/>
-        <TextBox Name="txtCounter" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Height="31" Margin="10,60,0,0" TextWrapping="Wrap" Text="Input number..." VerticalAlignment="Top" Width="568" FontSize="20" Foreground="#FF9A9898" GotFocus="txtCounter_GotFocus" LostFocus="txtCounter_LostFocus" TextChanged="txtCounter_TextChanged"/>
-        <ProgressBar Name="progressBar" Minimum="0" Maximum="100" HorizontalAlignment="Center" Height="24" Margin="0,355,0,0" VerticalAlignment="Top" Width="780"/>
-        <Label Name="lbCounter" FontWeight="Bold" Content="0/0" HorizontalAlignment="Center" Height="28" Margin="0,353,0,0" VerticalAlignment="Top" Width="172" FontSize="15" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <Button Name="btnDownload" Content="Download" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,60,0,0" VerticalAlignment="Top" Width="124" Click="btnDownload_Click" IsEnabled="False"/>
-        <Button Name="btnCancel" Content="Cancel" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,104,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnCancel_Click"/>
-        <Button Name="btnPause" Content="Pause" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,148,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnPause_Click"/>
-        <Button Name="btnResume" Content="Resume" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="644,190,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnResume_Click"/>
-        <Label  Name="lbDownloading" Content="Downloading..." FontWeight="Bold" HorizontalAlignment="Center" Height="27" Margin="0,384,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <!-- Photo controls -->
+        <Label Name="photoLabel" Content="How many photos would you like to download?" FontSize="20" HorizontalAlignment="Left" Height="40" Margin="10,28,0,0" VerticalAlignment="Top" Width="434" MouseDown="Label_MouseDown"/>
+        <TextBox Name="txtPhotoCounter" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Height="31" Margin="10,60,0,0" TextWrapping="Wrap" Text="Input number..." VerticalAlignment="Top" Width="568" FontSize="20" Foreground="#FF9A9898" GotFocus="txtCounter_GotFocus" LostFocus="txtCounter_LostFocus" TextChanged="txtCounter_TextChanged"/>
+        <ProgressBar Name="photoProgressBar" Minimum="0" Maximum="100" HorizontalAlignment="Left" Height="24" Margin="10,96,0,0" VerticalAlignment="Top" Width="568"/>
+        <Label Name="lbPhotoCounter" FontWeight="Bold" Content="0/0" HorizontalAlignment="Left" Height="28" Margin="208,91,0,0" VerticalAlignment="Top" Width="172" FontSize="15" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label  Name="lbPhotoDownloading" Content="Downloading..." FontWeight="Bold" HorizontalAlignment="Left" Height="27" Margin="227,115,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <!-- Photo Buttons -->
+        <GroupBox Name="photoGroupBox" HorizontalAlignment="Left" Height="160" Header="Photo Buttons" Margin="613,9,0,0" VerticalAlignment="Top" Width="146" FontWeight="Bold" Foreground="#FF1C94BD"/>
+        <Button Name="btnPhotoDownload" Content="Download" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="624,36,0,0" VerticalAlignment="Top" Width="124" Click="btnPhotoDownload_Click" IsEnabled="False"/>
+        <Button Name="btnPhotoCancel" Content="Cancel" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="624,125,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnPhotoCancel_Click"/>
+        <Button Name="btnPhotoPause" Content="Pause" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="31" Margin="624,82,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnPhotoPause_Click"/>
+
+
+        <!-- User controls -->
+        <Label Name="userLabel" Content="How many users would you like to download?" FontSize="20" HorizontalAlignment="Left" Height="40" Margin="10,185,0,0" VerticalAlignment="Top" Width="434" MouseDown="Label_MouseDown"/>
+        <TextBox Name="txtUserCounter" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Height="32" Margin="10,217,0,0" TextWrapping="Wrap" Text="Input number..." VerticalAlignment="Top" Width="568" FontSize="20" Foreground="#FF9A9898" GotFocus="txtCounter_GotFocus" LostFocus="txtCounter_LostFocus" TextChanged="txtCounter_TextChanged"/>
+        <ProgressBar Name="userProgressBar" Minimum="0" Maximum="100" HorizontalAlignment="Left" Height="24" Margin="10,255,0,0" VerticalAlignment="Top" Width="568"/>
+        <Label Name="lbUserCounter" FontWeight="Bold" Content="0/0" HorizontalAlignment="Left" Height="28" Margin="208,250,0,0" VerticalAlignment="Top" Width="172" FontSize="15" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label  Name="lbUserDownloading" Content="Downloading..." FontWeight="Bold" HorizontalAlignment="Left" Height="27" Margin="227,274,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <!-- User Buttons -->
+        <GroupBox Name="userGroupBox" HorizontalAlignment="Left" Height="160" Header="User Buttons" Margin="613,178,0,0" VerticalAlignment="Top" Width="146" FontWeight="Bold" Foreground="#FF1C94BD"/>
+        <Button Name="btnUserDownload" Content="Download" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="30" Margin="624,206,0,0" VerticalAlignment="Top" Width="124" Click="btnUserDownload_Click" IsEnabled="False"/>
+        <Button Name="btnUserCancel" Content="Cancel" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="32" Margin="624,294,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnUserCancel_Click"/>
+        <Button Name="btnUserPause" Content="Pause" FontWeight="Bold" FontSize="18" HorizontalAlignment="Left" Height="30" Margin="624,252,0,0" VerticalAlignment="Top" Width="124" IsEnabled="False" Click="btnUserPause_Click"/>
+
     </Grid>
 </Window>
